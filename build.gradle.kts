@@ -26,14 +26,20 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("tools.jackson.module:jackson-module-kotlin")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("org.springframework.boot:spring-boot-starter-jooq")
     runtimeOnly("org.postgresql:postgresql")
 	implementation("org.springframework.boot:spring-boot-starter-flyway")
 	runtimeOnly("org.flywaydb:flyway-database-postgresql")
 	jooqCodegen("org.postgresql:postgresql")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
+
+	// Testing
+	testImplementation("org.springframework.boot:spring-boot-starter-jooq-test")
+	testImplementation("org.springframework.boot:spring-boot-testcontainers")
+	testImplementation("org.testcontainers:testcontainers-postgresql")
+	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 kotlin {
@@ -50,6 +56,21 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+
+	// Print each test result and a summary in the terminal.
+	testLogging {
+		events("passed", "skipped", "failed")
+		exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+	}
+
+	afterSuite(KotlinClosure2<TestDescriptor, TestResult, Unit>({ suite, result ->
+		if (suite.parent == null) {
+			println(
+				"\nTests: ${result.testCount} total, ${result.successfulTestCount} passed, " +
+					"${result.failedTestCount} failed, ${result.skippedTestCount} skipped"
+			)
+		}
+	}))
 }
 
 val codegenEnv = Properties().apply {
