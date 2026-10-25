@@ -87,17 +87,23 @@ class EdgeRepositoryTests @Autowired constructor(
         }
     }
 
+
+    // --- deleteEdge ---
+
     @Test
     fun `deletes only the given edge and detaches the subtree below it`() {
-        // 1→2, 2→4
+        // 1→2, 1→3, 2→4, 2→6
         edgeRepository.insertEdge(Edge(1, 2))
+        edgeRepository.insertEdge(Edge(1, 3))
         edgeRepository.insertEdge(Edge(2, 4))
+        edgeRepository.insertEdge(Edge(2, 6))
 
         assertEquals(1, edgeRepository.deleteEdge(Edge(1, 2)))
 
         assertFalse(edgeRepository.hasParent(2), "2 is now a root")
-        assertTrue(edgeRepository.hasChildren(2), "2 keeps its child 4")
-        assertEquals(1, dsl.fetchCount(EDGE))
+        assertTrue(edgeRepository.hasParent(4) && edgeRepository.hasParent(6), "2 keeps its children 4 and 6")
+        assertTrue(edgeRepository.hasChildren(1), "1 keeps its other child 3")
+        assertEquals(3, dsl.fetchCount(EDGE), "only 1→2 was removed")
     }
 
     @Test

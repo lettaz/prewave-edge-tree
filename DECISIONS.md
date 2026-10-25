@@ -20,7 +20,10 @@ Example tree used throughout (from the brief):
 - Second Parent - Every has one one parent.
 - Cycle - we do the above, so its difficult to have cycles but then there is no prevention from have a connection to the tree root(not sub tree)
 
-**Out of scope.** Didnt consider patching or moving a node to a different tree, so today that means deleting the old edge, then creating the new one.
+**Out of scope.**
+
+- Moving a node to a different tree, today that means deleting the old edge then creating a new one
+- Bulk creatino
 
 ---
 
@@ -40,3 +43,15 @@ A considered cost as seen above is in a chain 1,000,000 levels deep, attaching t
 
 - edge creation p99 latency exceeds a agree Xms, or
 - trees deeper than about 10,000 levels appear -- in this case i think we can maybe establish a creation rule would say top-down and its cleaner.
+
+## 3. Deleting an Edge
+
+**Context.** I introduces an optional strategy based on possible business use case, for example if we trace BMW supply chain... say they buy from bosco and bosco buys from chipco or steelco or something... we can have multiple deltion strategies:
+
+- detach(default and implemented)- only detach BMW, bosco becomes a substree of its own
+- promote - remove the connection of BMW from bosco and attach chipco to BMW, bosco is deleted as a node.
+- cascade - remove all children nodes including the subtee.. i.e bosco, chipco, steelco gets deleted.
+
+**Out of scope.**
+
+- Bulk deletion

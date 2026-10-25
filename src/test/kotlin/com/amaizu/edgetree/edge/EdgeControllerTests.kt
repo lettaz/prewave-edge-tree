@@ -160,6 +160,7 @@ class EdgeControllerTests @Autowired constructor(
         verifyNoInteractions(service)
     }
 
+    // Just to indicate, yes its long parameter list but it was written by me.
     @ParameterizedTest
     @ValueSource(
         strings = [
@@ -195,7 +196,7 @@ class EdgeControllerTests @Autowired constructor(
         verifyNoInteractions(service)
     }
 
-    // --- DELETE /api/v1/edges?fromId=&toId=&strategy= ---
+    // --- DELETE EDGE ---
 
     @Test
     fun `deletes an edge and returns 204`() {

@@ -26,6 +26,15 @@ class EdgeRepository(private val dsl: DSLContext) {
             .execute()
     }
 
+
+    fun deleteEdge(edge: Edge): Int {
+        return dsl
+            .deleteFrom(EDGE)
+            .where(EDGE.FROM_ID.eq(edge.fromId))
+            .and(EDGE.TO_ID.eq(edge.toId))
+            .execute()
+    }
+
     fun hasParent(childId: Int): Boolean {
         return dsl.fetchExists(EDGE, EDGE.TO_ID.eq(childId))
     }
