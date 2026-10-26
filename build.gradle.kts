@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
 	kotlin("jvm") version "2.3.21"
 	kotlin("plugin.spring") version "2.3.21"
@@ -30,7 +28,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 	implementation("org.springframework.boot:spring-boot-starter-flyway")
 	runtimeOnly("org.flywaydb:flyway-database-postgresql")
-	jooqCodegen("org.postgresql:postgresql")
+	jooqCodegen("org.jooq:jooq-meta-extensions:3.21.7")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
 
@@ -74,33 +72,30 @@ tasks.withType<Test> {
 	}))
 }
 
-val codegenEnv = Properties().apply {
-    val envFile = file(".env")
+val migrations = layout.projectDirectory.dir("src/main/resources/db/migration")
 
-    if (envFile.isFile) {
-        envFile.inputStream().use { load(it) }
-    }
-}
-
+// Generates the jOOQ classes from the Flyway migration files, so building needs no running database.
 jooq {
     configuration {
-        jdbc {
-            driver = "org.postgresql.Driver"
-            url = System.getenv("DB_URL")
-                ?: codegenEnv.getProperty("DB_URL")
-            user = System.getenv("DB_USERNAME")
-                ?: codegenEnv.getProperty("DB_USERNAME")
-            password = System.getenv("DB_PASSWORD")
-                ?: codegenEnv.getProperty("DB_PASSWORD")
-        }
 		generator {
 			name = "org.jooq.codegen.KotlinGenerator"
 
 			database {
-				name = "org.jooq.meta.postgres.PostgresDatabase"
-				inputSchema = "public"
-				includes = ".*"
-    			excludes = "flyway_schema_history"
+				name = "org.jooq.meta.extensions.ddl.DDLDatabase"
+				properties {
+					property {
+						key = "scripts"
+						value = migrations.asFile.absolutePath + "/*.sql"
+					}
+					property {
+						key = "sort"
+						value = "flyway"
+					}
+					property {
+						key = "defaultNameCase"
+						value = "lower"
+					}
+				}
 			}
 
 			target {
@@ -113,5 +108,14 @@ jooq {
 			}
     	}
 	}
+}
+
+// Regenerate when a migration changes, and always before compiling.
+tasks.named("jooqCodegen") {
+	inputs.files(fileTree(migrations))
+}
+
+tasks.named("compileKotlin") {
+	dependsOn("jooqCodegen")
 }
 

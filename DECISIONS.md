@@ -75,3 +75,4 @@ There was a concern about ORDER BY for a strict BFS, I tested a temporary random
 
 - Auth and Authorization - Might add but for now its currently deffered, due to deadline
 - Documented the only the get tree endpoing fully due to timing, ideally all should be documented.
+- Generic API response from controller input validation for status 400 and 500 (e.g. when there is not input for onr of the required param during create Edge, it gives a generic spring error without giving the exact indication, conventional good quality would be to override that.)
