@@ -4,6 +4,8 @@ An API service that stores a tree as parent → child edges and returns any subt
 
 The design choices and trade-offs are written up in [DECISIONS.md](DECISIONS.md).
 
+You can see performance test result in [PERFORMANCE.md](PERFORMANCE.md).
+
 ## What you need
 
 - **JDK 21**
