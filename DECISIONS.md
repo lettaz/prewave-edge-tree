@@ -44,6 +44,8 @@ A considered cost as seen above is in a chain 1,000,000 levels deep, attaching t
 - edge creation p99 latency exceeds a agree Xms, or
 - trees deeper than about 10,000 levels appear -- in this case i think we can maybe establish a creation rule would say top-down and its cleaner.
 
+---
+
 ## 3. Deleting an Edge
 
 **Context.** I introduces an optional strategy based on possible business use case, for example if we trace BMW supply chain... say they buy from bosco and bosco buys from chipco or steelco or something... we can have multiple deltion strategies:
@@ -55,6 +57,8 @@ A considered cost as seen above is in a chain 1,000,000 levels deep, attaching t
 **Out of scope.**
 
 - Bulk deletion
+
+---
 
 ## 4. Traversal - BFS vs DFS
 
@@ -71,7 +75,31 @@ There was a concern about ORDER BY for a strict BFS, I tested a temporary random
 - Stream cutoff would show 200 with part array
 - Async timeout - due to server time limit, would require increase(to read:spring async request timeout)
 
-**Not Done/Half Done**
+---
+
+## 5. Security
+
+**Context.** What is already in place:
+
+- Input validation - ids must be positive whole numbers, checked before the service runs
+- No SQL injection - jOOQ binds every value as a parameter, nothing is pasted into the SQL
+- Tree integrity - the rules live in the code and also as database constraints, so even a direct DB write cant break the tree
+- Errors come back as Problem Details, no stack traces or SQL in the response
+
+**Decision.** No authentication or rate limiting for now. Authorization needs a business rule first, say BMW should only see and edit its own supply chain and not the one from Bosco, and the brief doesnt give one.
+
+**How I would add it.**
+
+- Auth - Spring Security as an OAuth2 resource server checking JWTs. Creating and deleting edges would need a write scope like `tree:write`, reading only `tree:read`.
+- Rate limiting - at the gateway (nginx or the cloud load balancer) rather than in the app, because a counter kept in the memory of the app stops working once there is more than one instance.
+
+**Trade-off**
+
+- The heaviest call is getting a huge subtree. Streaming keeps the memory flat but the database still does the work, so someone calling it in a loop could slow things down. A server-side cap on `maxDepth` or on the rows returned would help.
+
+---
+
+## Not Done/Half Done
 
 - Auth and Authorization - Might add but for now its currently deffered, due to deadline
 - Documented the only the get tree endpoing fully due to timing, ideally all should be documented.
