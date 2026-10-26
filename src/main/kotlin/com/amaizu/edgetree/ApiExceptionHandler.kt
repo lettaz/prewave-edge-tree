@@ -1,5 +1,12 @@
-package com.amaizu.edgetree.edge.exceptions
+package com.amaizu.edgetree
 
+import com.amaizu.edgetree.edge.exceptions.CycleException
+import com.amaizu.edgetree.edge.exceptions.EdgeAlreadyExistsException
+import com.amaizu.edgetree.edge.exceptions.EdgeNotFoundException
+import com.amaizu.edgetree.edge.exceptions.NodeAlreadyHasParentException
+import com.amaizu.edgetree.edge.exceptions.SelfLinkException
+import com.amaizu.edgetree.edge.exceptions.UnsupportedDeleteStrategyException
+import com.amaizu.edgetree.tree.exceptions.NodeNotFoundException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
@@ -7,10 +14,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
-
+// Maps every API exception to a ProblemDetail response, in one place for all features.
 @RestControllerAdvice
-class EdgeExceptionHandler : ResponseEntityExceptionHandler() {
-    private val log = LoggerFactory.getLogger(EdgeExceptionHandler::class.java)
+class ApiExceptionHandler : ResponseEntityExceptionHandler() {
+    private val log = LoggerFactory.getLogger(ApiExceptionHandler::class.java)
 
     @ExceptionHandler(EdgeAlreadyExistsException::class)
     fun handleEdgeAlreadyExists(exception: EdgeAlreadyExistsException): ProblemDetail {
@@ -53,6 +60,17 @@ class EdgeExceptionHandler : ResponseEntityExceptionHandler() {
             exception.message ?: "The edge does not exist"
         ).apply {
             title = "Edge not found"
+        }
+    }
+
+    @ExceptionHandler(NodeNotFoundException::class)
+    fun handleNodeNotFound(exception: NodeNotFoundException): ProblemDetail {
+        log.debug("Rejected: {}", exception.message)
+        return ProblemDetail.forStatusAndDetail(
+            HttpStatus.NOT_FOUND,
+            exception.message ?: "The node does not exist"
+        ).apply {
+            title = "Node not found"
         }
     }
 

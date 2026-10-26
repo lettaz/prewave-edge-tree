@@ -55,3 +55,18 @@ A considered cost as seen above is in a chain 1,000,000 levels deep, attaching t
 **Out of scope.**
 
 - Bulk deletion
+
+## 4. Traversal - BFS vs DFS
+
+**Context.**
+To manage performance for say 1M edges with may over 100k tree depth, i considered a flat and streamed output becuase rows can be sent while being read from the DB and I wont need a library for algorithm or any becuase POSTGRES can efficiently handle this and the memory stay small and constant and we introduce LIMIT
+
+Also for traversal considered is BFS becuase ideally an org wont want to see their direct connections first and those ones connection, so we can stream level by level with BFS where as if DFS cant give us that and moreover
+BFS is already how POSTGRES RECURSIVE works, as i said above.
+
+There was a concern about ORDER BY for a strict BFS, I tested a temporary random tree of 100,000 nodes, 28 levels deep with the Recursive Union and primary key index scan with no sort step and it still maintained the level order, so that backs my decision becuase POSTGRES handles the hard part but yeah would implement a Fail loudly check for a case where an upgrade drops this behaviour.
+
+**Trade-off**
+
+- Stream cutoff would show 200 with part array
+- Async timeout - due to server time limit, would require increase(to read:spring async request timeout)

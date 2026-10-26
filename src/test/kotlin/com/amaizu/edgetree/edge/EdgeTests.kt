@@ -49,4 +49,6 @@ class EdgeTests @Autowired constructor(
         assertTrue(outcomes.single { it.isFailure }.exceptionOrNull() is CycleException)
         assertEquals(3, dsl.fetchCount(EDGE))
     }
+
+    // Add e2e test for create and delete edge
 }

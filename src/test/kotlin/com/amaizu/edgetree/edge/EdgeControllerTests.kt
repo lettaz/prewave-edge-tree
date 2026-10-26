@@ -1,9 +1,9 @@
 package com.amaizu.edgetree.edge
 
 import com.amaizu.edgetree.config.WebConfig
+import com.amaizu.edgetree.ApiExceptionHandler
 import com.amaizu.edgetree.edge.exceptions.CycleException
 import com.amaizu.edgetree.edge.exceptions.EdgeAlreadyExistsException
-import com.amaizu.edgetree.edge.exceptions.EdgeExceptionHandler
 import com.amaizu.edgetree.edge.exceptions.EdgeNotFoundException
 import com.amaizu.edgetree.edge.exceptions.NodeAlreadyHasParentException
 import com.amaizu.edgetree.edge.exceptions.SelfLinkException
@@ -26,7 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(EdgeController::class)
-@Import(WebConfig::class, EdgeExceptionHandler::class)
+@Import(WebConfig::class, ApiExceptionHandler::class)
 class EdgeControllerTests @Autowired constructor(
     private val mvc: MockMvc
 ) {
