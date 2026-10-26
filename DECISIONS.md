@@ -90,7 +90,7 @@ There was a concern about ORDER BY for a strict BFS, I tested a temporary random
 
 **How I would add it.**
 
-- Auth - Spring Security as an OAuth2 resource server checking JWTs. Creating and deleting edges would need a write scope like `tree:write`, reading only `tree:read`.
+- Auth - Spring Security as an OAuth2 resource server checking JWTs. Creating and deleting edges would need a write scope like `tree:write`, reading only `tree:read` or actually a simple Bearer token, depends on business decision.
 - Rate limiting - at the gateway (nginx or the cloud load balancer) rather than in the app, because a counter kept in the memory of the app stops working once there is more than one instance.
 
 **Trade-off**
@@ -102,5 +102,4 @@ There was a concern about ORDER BY for a strict BFS, I tested a temporary random
 ## Not Done/Half Done
 
 - Auth and Authorization - Might add but for now its currently deffered, due to deadline
-- Documented the only the get tree endpoing fully due to timing, ideally all should be documented.
 - Generic API response from controller input validation for status 400 and 500 (e.g. when there is not input for onr of the required param during create Edge, it gives a generic spring error without giving the exact indication, conventional good quality would be to override that.)

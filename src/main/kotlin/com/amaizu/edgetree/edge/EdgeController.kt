@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 // Swagger
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springdoc.core.annotations.ParameterObject
 
 
 @Tag(name = "Edges", description = "Create and delete edges")
@@ -22,6 +25,11 @@ import io.swagger.v3.oas.annotations.tags.Tag
 class EdgeController(
     private val service: EdgeService
 ) {
+    @Operation(summary = "Create an edge from a parent to a child")
+    @ApiResponse(responseCode = "201", description = "Edge created")
+    @ApiResponse(responseCode = "400", description = "Invalid ids, or a node linked to itself")
+    @ApiResponse(responseCode = "409", description = "Edge already exists, the child already has a parent, or it would create a cycle")
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun createEdge(@Valid @RequestBody request: CreateEdgeRequest): Edge {
@@ -33,9 +41,14 @@ class EdgeController(
         return service.createEdge(edge)
     }
 
+    @Operation(summary = "Delete an edge, the child keeps its own subtree")
+    @ApiResponse(responseCode = "204", description = "Edge deleted")
+    @ApiResponse(responseCode = "400", description = "Invalid ids, or an empty or unsupported strategy")
+    @ApiResponse(responseCode = "404", description = "Edge does not exist")
+
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteEdge(@Valid request: DeleteEdgeRequest) {
+    fun deleteEdge(@Valid @ParameterObject request: DeleteEdgeRequest) {
         val edge = Edge(
             fromId = requireNotNull(request.fromId),
             toId = requireNotNull(request.toId)
