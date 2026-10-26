@@ -12,8 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
+// Swagger
+import io.swagger.v3.oas.annotations.tags.Tag
+
+
+@Tag(name = "Edges", description = "Create and delete edges")
 @RestController
-@RequestMapping(path = ["/edges"], version = "1")
+@RequestMapping(path = ["/edges"], version = "v1")
 class EdgeController(
     private val service: EdgeService
 ) {

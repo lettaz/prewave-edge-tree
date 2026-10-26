@@ -1,7 +1,6 @@
 package com.amaizu.edgetree.config
 
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.method.HandlerTypePredicate
 import org.springframework.web.servlet.config.annotation.ApiVersionConfigurer
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer
@@ -13,11 +12,13 @@ class WebConfig : WebMvcConfigurer {
     override fun configurePathMatch(configurer: PathMatchConfigurer) {
         configurer.addPathPrefix(
             "/api/{version}",
-            HandlerTypePredicate.forAnnotation(RestController::class.java)
+            HandlerTypePredicate.forBasePackage("com.amaizu.edgetree")
         )
     }
 
     override fun configureApiVersioning(configurer: ApiVersionConfigurer) {
-        configurer.usePathSegment(1)
+        configurer
+            .usePathSegment(1) { path -> path.value().startsWith("/api/") }
+            .setVersionRequired(false)
     }
 }

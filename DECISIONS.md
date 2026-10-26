@@ -70,3 +70,8 @@ There was a concern about ORDER BY for a strict BFS, I tested a temporary random
 
 - Stream cutoff would show 200 with part array
 - Async timeout - due to server time limit, would require increase(to read:spring async request timeout)
+
+**Not Done/Half Done**
+
+- Auth and Authorization - Might add but for now its currently deffered, due to deadline
+- Documented the only the get tree endpoing fully due to timing, ideally all should be documented.
