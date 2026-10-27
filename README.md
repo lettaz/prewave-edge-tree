@@ -16,6 +16,8 @@ You can see performance test result in [PERFORMANCE.md](PERFORMANCE.md).
 **1. Start PostgreSQL**
 
 ```bash
+Use your own container/image, for example:
+
 docker run -d --name edge-tree-postgres \
   -e POSTGRES_DB=edge_tree -e POSTGRES_USER=edge_tree -e POSTGRES_PASSWORD=edge_tree \
   -p 5433:5432 postgres:18.6
